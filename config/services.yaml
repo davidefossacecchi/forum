@@ -22,3 +22,11 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Serialization\PaginatorSerializer:
+        tags:
+            - name: jms_serializer.handler
+              type: Doctrine\ORM\Tools\Pagination\Paginator
+              direction: serialization
+              format: json
+              method: serialize
+

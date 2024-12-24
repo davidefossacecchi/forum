@@ -2,12 +2,15 @@
 
 namespace App\Entity;
 
+use App\Repository\TopicRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\VirtualProperty;
+use Symfony\Component\Serializer\Attribute\SerializedName;
+use Symfony\Component\Validator\Constraints as Assert;
 
-
-#[Entity]
+#[Entity(repositoryClass: TopicRepository::class)]
 class Topic
 {
 
@@ -17,9 +20,11 @@ class Topic
     private int $id;
 
     #[ORM\Column(type: Types::STRING, length: 255)]
+    #[Assert\NotBlank]
     private string $title;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank]
     private string $text;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'topics')]
