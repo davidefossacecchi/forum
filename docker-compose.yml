@@ -1,6 +1,6 @@
 services:
   php:
-    image: dfossacecchi/php-8.2-fpm:1.4
+    image: dfossacecchi/php-8.2-fpm:1.5
     build:
       context: ./docker/php
       args:

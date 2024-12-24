@@ -4,10 +4,9 @@ ARG UID
 ARG GID
 
 RUN apk --update --no-cache add \
-    postgresql-dev \
     $PHPIZE_DEPS \
     && pecl install redis \
-    && docker-php-ext-install pdo_pgsql \
+    && docker-php-ext-install mysqli pdo pdo_mysql \
     && docker-php-ext-enable redis \
     && apk --no-cache add shadow \
     && usermod -u $UID www-data \
