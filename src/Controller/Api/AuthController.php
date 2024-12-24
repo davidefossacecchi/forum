@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Entity\User;
+use App\Exception\BadRequestException;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -10,6 +11,8 @@ use FOS\RestBundle\View\View;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
@@ -18,6 +21,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class AuthController extends AbstractFOSRestController
 {
+    use ChecksFormRequests;
     #[Rest\Post(path: '/signup', name: 'signup')]
     public function signup(Request $request, UserPasswordHasherInterface $hasher, EntityManagerInterface $em): ?View
     {
@@ -29,9 +33,7 @@ class AuthController extends AbstractFOSRestController
 
         $form->submit($request->request->all());
 
-        if (false === $form->isValid()) {
-            return $this->view($form->getErrors());
-        }
+        $this->throwExceptionIfInvalid($form);
 
         /** @var User $user */
         $user = $form->getData();
