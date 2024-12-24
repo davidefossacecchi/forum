@@ -6,18 +6,20 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\View\View;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 class AuthController extends AbstractFOSRestController
 {
-    #[Rest\Post(name: 'signup', path: '/signup')]
-    public function signup(Request $request, UserPasswordHasherInterface $hasher, EntityManagerInterface $em)
+    #[Rest\Post(path: '/signup', name: 'signup')]
+    public function signup(Request $request, UserPasswordHasherInterface $hasher, EntityManagerInterface $em): ?View
     {
         $form = $this->createFormBuilder(new User())
             ->add('email', EmailType::class)
@@ -27,19 +29,29 @@ class AuthController extends AbstractFOSRestController
 
         $form->submit($request->request->all());
 
-        if ($form->isValid()) {
-            /** @var User $user */
-            $user = $form->getData();
-
-            $password = $user->getPlainPassword();
-            $cryptedPassword = $hasher->hashPassword($user, $password);
-            $user->setPassword($cryptedPassword);
-
-            $em->persist($user);
-            $em->flush();
-        } else {
-            $violations = $form->getErrors();
-            return $this->view($violations);
+        if (false === $form->isValid()) {
+            return $this->view($form->getErrors());
         }
+
+        /** @var User $user */
+        $user = $form->getData();
+
+        $password = $user->getPlainPassword();
+        $cryptedPassword = $hasher->hashPassword($user, $password);
+        $user->setPassword($cryptedPassword);
+
+        $em->persist($user);
+        $em->flush();
+        return null;
+    }
+
+
+    #[Rest\Get(path: '/me', name: 'me')]
+    public function me(#[CurrentUser] User $user): View
+    {
+        return $this->view([
+            'email' => $user->getEmail(),
+            'name' => $user->getName()
+        ]);
     }
 }
