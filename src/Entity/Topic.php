@@ -13,7 +13,7 @@ use JMS\Serializer\Annotation\Exclude;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[Entity(repositoryClass: TopicRepository::class)]
-class Topic
+class Topic implements UserOwnedEntityInterface
 {
 
     #[ORM\Id]
@@ -87,6 +87,11 @@ class Topic
     {
         $this->user = $user;
         return $this;
+    }
+
+    public function getAuthor(): User
+    {
+        return $this->getUser();
     }
 
     public function getCreatedAt(): \DateTimeImmutable

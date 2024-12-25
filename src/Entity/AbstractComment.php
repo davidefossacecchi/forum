@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     'comment' => Comment::class,
     'reply' => CommentReply::class
 ])]
-abstract class AbstractComment
+abstract class AbstractComment implements UserOwnedEntityInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

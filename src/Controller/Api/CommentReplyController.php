@@ -13,11 +13,13 @@ use FOS\RestBundle\View\View;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('comments/{comment}/replies')]
 class CommentReplyController extends AbstractFOSRestController
 {
     use ChecksFormRequests;
+
     public function __construct(private readonly EntityManagerInterface $em)
     {
 
@@ -45,5 +47,13 @@ class CommentReplyController extends AbstractFOSRestController
         $this->em->refresh($commentReply);
         return $this->view($commentReply);
 
+    }
+
+    #[Rest\Delete('/{reply}', 'delete_reply')]
+    #[IsGranted('delete', 'reply')]
+    public function delete(CommentReply $reply): void
+    {
+        $this->em->remove($reply);
+        $this->em->flush();
     }
 }

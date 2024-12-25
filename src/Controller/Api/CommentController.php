@@ -14,6 +14,7 @@ use FOS\RestBundle\View\View;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('topics/{topic}/comments')]
 class CommentController extends AbstractFOSRestController
@@ -21,7 +22,6 @@ class CommentController extends AbstractFOSRestController
     use ChecksFormRequests;
     public function __construct(private readonly EntityManagerInterface $em)
     {
-
     }
 
     #[Rest\Get('', name: 'get_comments')]
@@ -54,5 +54,13 @@ class CommentController extends AbstractFOSRestController
         $this->em->refresh($comment);
 
         return $this->view($comment);
+    }
+
+    #[Rest\Delete('/{comment}', 'delete_comment')]
+    #[IsGranted('delete', 'comment')]
+    public function delete(Comment $comment): void
+    {
+        $this->em->remove($comment);
+        $this->em->flush();
     }
 }

@@ -13,6 +13,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Rest\Route('/topics')]
 class TopicController extends AbstractFOSRestController
@@ -51,5 +52,13 @@ class TopicController extends AbstractFOSRestController
     public function show(Topic $topic): View
     {
         return $this->view($topic);
+    }
+
+    #[Rest\Delete("/{topic}", name: "delete_topic", requirements: ['topic' => '\d+'])]
+    #[IsGranted("delete", "topic")]
+    public function delete(Topic $topic, EntityManagerInterface $entityManager): void
+    {
+        $entityManager->remove($topic);
+        $entityManager->flush();
     }
 }
