@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation\Timestampable;
 use JMS\Serializer\Annotation\Exclude;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -37,6 +38,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Topic::class, mappedBy: 'user')]
     #[Exclude]
     private Collection $topics;
+
+    #[Timestampable(on: 'create')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Exclude]
+    protected \DateTimeImmutable $createdAt;
+
+
+    #[Timestampable(on: 'update')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Exclude]
+    protected \DateTimeImmutable $updatedAt;
 
     private ?string $plainPassword = null;
 
@@ -123,6 +135,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPlainPassword(?string $plainPassword): User
     {
         $this->plainPassword = $plainPassword;
+        return $this;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): User
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    public function getUpdatedAt(): \DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): User
+    {
+        $this->updatedAt = $updatedAt;
         return $this;
     }
 }
