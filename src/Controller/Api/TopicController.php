@@ -11,21 +11,19 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
-use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
+#[Rest\Route('/topics')]
 class TopicController extends AbstractFOSRestController
 {
     use ChecksFormRequests;
 
-    #[Rest\Post("/topics", name: "create_topic")]
+    #[Rest\Post("", name: "create_topic")]
     public function create(Request $request, EntityManagerInterface $entityManager, #[CurrentUser] User $user): View
     {
-        $topic = new Topic();
-        $builder = $this->createFormBuilder($topic);
-
-        $form = $builder->add('title', TextType::class)
+        $form = $this->createFormBuilder(new Topic())
+            ->add('title', TextType::class)
             ->add('text', TextType::class)
             ->getForm();
 
@@ -39,14 +37,19 @@ class TopicController extends AbstractFOSRestController
         return $this->view($topic);
     }
 
-    #[Rest\Get("/topics", name: 'list_topics')]
-    public function index(Request $request, EntityManagerInterface $em)
+    #[Rest\Get("", name: 'list_topics')]
+    public function index(Request $request, EntityManagerInterface $em): View
     {
         $page = $request->query->get('page', 1);
         /** @var TopicRepository $repo */
         $repo = $em->getRepository(Topic::class);
         $pg = $repo->getPage($page);
         return $this->view($pg);
+    }
 
+    #[Rest\Get("/{topic}", name: 'show_topic', requirements: ['topic' => '\d+'])]
+    public function show(Topic $topic): View
+    {
+        return $this->view($topic);
     }
 }
