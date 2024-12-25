@@ -2,12 +2,13 @@
 
 namespace App\Entity;
 
+use App\Repository\CommentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 
-#[ORM\Entity()]
+#[ORM\Entity(repositoryClass: CommentRepository::class)]
 class Comment extends AbstractComment
 {
     #[ORM\ManyToOne(targetEntity: Topic::class, inversedBy: 'comments')]

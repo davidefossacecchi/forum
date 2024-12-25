@@ -5,6 +5,7 @@ namespace App\Controller\Api;
 use App\Entity\Comment;
 use App\Entity\Topic;
 use App\Entity\User;
+use App\Repository\CommentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -26,7 +27,10 @@ class CommentController extends AbstractFOSRestController
     #[Rest\Get('', name: 'get_comments')]
     public function index(Topic $topic)
     {
-        return $this->view($topic->getComments());
+        /** @var CommentRepository $commentsRepo */
+        $commentsRepo = $this->em->getRepository(Comment::class);
+        $comments = $commentsRepo->findByTopicId($topic->getId());
+        return $this->view($comments);
     }
 
     #[Rest\Post("", name: 'add_comment')]
