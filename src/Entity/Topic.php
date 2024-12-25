@@ -3,13 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\TopicRepository;
-use Couchbase\DateRangeSearchQuery;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use JMS\Serializer\Annotation\VirtualProperty;
-use Symfony\Component\Serializer\Attribute\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[Entity(repositoryClass: TopicRepository::class)]
@@ -35,6 +34,14 @@ class Topic
     #[Gedmo\Timestampable(on: 'create')]
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
+
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'topic', orphanRemoval: true)]
+    private Collection $comments;
+
+    public function __construct()
+    {
+        $this->comments = new ArrayCollection();
+    }
 
     public function getId(): int
     {
@@ -88,6 +95,26 @@ class Topic
     public function setCreatedAt(\DateTimeImmutable $createdAt): Topic
     {
         $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): Topic
+    {
+        if (false === $this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setTopic($this);
+        }
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): Topic
+    {
+        $this->comments->removeElement($comment);
         return $this;
     }
 }

@@ -42,19 +42,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Timestampable(on: 'create')]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Exclude]
-    protected \DateTimeImmutable $createdAt;
+    private \DateTimeImmutable $createdAt;
 
 
     #[Timestampable(on: 'update')]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Exclude]
-    protected \DateTimeImmutable $updatedAt;
+    private \DateTimeImmutable $updatedAt;
+
+    #[ORM\OneToMany(targetEntity: AbstractComment::class, mappedBy: 'author')]
+    private Collection $comments;
 
     private ?string $plainPassword = null;
 
     public function __construct()
     {
         $this->topics = new ArrayCollection();
+        $this->comments = new ArrayCollection();
     }
 
     public function getRoles(): array
