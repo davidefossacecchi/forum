@@ -40,17 +40,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $topics;
 
     #[Timestampable(on: 'create')]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     #[Exclude]
     private \DateTimeImmutable $createdAt;
 
 
     #[Timestampable(on: 'update')]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     #[Exclude]
     private \DateTimeImmutable $updatedAt;
 
     #[ORM\OneToMany(targetEntity: AbstractComment::class, mappedBy: 'author')]
+    #[Exclude]
     private Collection $comments;
 
     private ?string $plainPassword = null;

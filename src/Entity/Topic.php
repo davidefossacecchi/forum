@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use JMS\Serializer\Annotation\Exclude;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[Entity(repositoryClass: TopicRepository::class)]
@@ -36,6 +37,7 @@ class Topic
     private \DateTimeImmutable $createdAt;
 
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'topic', orphanRemoval: true)]
+    #[Exclude]
     private Collection $comments;
 
     public function __construct()

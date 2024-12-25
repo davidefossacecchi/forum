@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\DBAL\Types\Types;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity()]
 #[ORM\InheritanceType('SINGLE_TABLE')]
@@ -21,6 +22,7 @@ abstract class AbstractComment
     private int $id;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank]
     private string $text;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'comments')]
