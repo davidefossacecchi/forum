@@ -13,6 +13,11 @@ restart: down up
 test:
 	env USER_ID=$(USER_ID) GROUP_ID=$(GROUP_ID) docker compose exec php bin/phpunit
 
+fixtures:
+	env USER_ID=$(USER_ID) GROUP_ID=$(GROUP_ID) docker compose exec php bin/console doctrine:schema:drop --force
+	env USER_ID=$(USER_ID) GROUP_ID=$(GROUP_ID) docker compose exec php bin/console doctrine:schema:update --force
+	env USER_ID=$(USER_ID) GROUP_ID=$(GROUP_ID) docker compose exec php bin/console doctrine:fixtures:load
+
 composer-install:
 	env USER_ID=$(USER_ID) GROUP_ID=$(GROUP_ID) docker compose exec php composer install
 
