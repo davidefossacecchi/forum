@@ -3,7 +3,8 @@
 namespace App\Controller\Api;
 
 use App\Entity\User;
-use App\Exception\BadRequestException;
+use App\Repository\CommentRepository;
+use App\Repository\TopicRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -11,8 +12,6 @@ use FOS\RestBundle\View\View;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Form;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
@@ -54,6 +53,30 @@ class AuthController extends AbstractFOSRestController
         return $this->view([
             'email' => $user->getEmail(),
             'name' => $user->getName()
+        ]);
+    }
+
+    #[Rest\Get(path: '/me/topics', name: 'my_topics')]
+    public function userTopics(#[CurrentUser] User $user, TopicRepository $topicRepository): View
+    {
+        return $this->view([
+            'topics' => $topicRepository->getByUser($user)
+        ]);
+    }
+
+    #[Rest\Get(path: '/me/comments', name: 'my_comments')]
+    public function userComments(#[CurrentUser] User $user, CommentRepository $commentRepository): View
+    {
+        return $this->view([
+            'comments' => $commentRepository->getUserComments($user)
+        ]);
+    }
+
+    #[Rest\Get(path: '/me/involved', name: 'my_comments')]
+    public function userInvolvedTopics(#[CurrentUser] User $user, TopicRepository $topicRepository): View
+    {
+        return $this->view([
+            'involved' => $topicRepository->getUserInvolvedTopics($user)
         ]);
     }
 }

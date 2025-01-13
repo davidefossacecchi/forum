@@ -25,4 +25,26 @@ class TopicRepository extends ServiceEntityRepository
             ->setMaxResults(self::PAGE_LENGTH);
         return new Paginator($qb);
     }
+
+    public function getByUser(User $user): array
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.user = :author')
+            ->setParameter('author', $user)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getUserInvolvedTopics(User $user): array
+    {
+        return $this->createQueryBuilder('t')
+            ->join('t.comments', 'c')
+            ->join('c.replies', 'r')
+            ->where('t.user = :user')
+            ->orWhere('c.author = :user')
+            ->orWhere('r.author = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+    }
 }
