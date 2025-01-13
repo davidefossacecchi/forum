@@ -54,12 +54,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Exclude]
     private Collection $comments;
 
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'followed')]
+    #[ORM\JoinTable(
+        name: 'user_follower',
+        joinColumns: new ORM\JoinColumn(name: 'follower_id', referencedColumnName: 'id'),
+        inverseJoinColumns: new ORM\JoinColumn(name: 'followed_id', referencedColumnName: 'id')
+    )]
+    #[Exclude]
+    private Collection $followers;
+
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'followers')]
+    private Collection $followed;
+
     private ?string $plainPassword = null;
 
     public function __construct()
     {
         $this->topics = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->followers = new ArrayCollection();
+        $this->followed = new ArrayCollection();
     }
 
     public function getRoles(): array
@@ -140,6 +154,49 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPlainPassword(?string $plainPassword): User
     {
         $this->plainPassword = $plainPassword;
+        return $this;
+    }
+
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function getFollowers(): Collection
+    {
+        return $this->followers;
+    }
+
+    public function addFollower(User $user): User
+    {
+        if ($user->getId() === $this->getId()) {
+            throw new \InvalidArgumentException('A user cannot follow it self');
+        }
+
+        if (false === $this->followers->contains($user)) {
+            $this->followers->add($user);
+            $user->addFollowed($this);
+        }
+
+        return $this;
+    }
+
+    public function getFollowed(): Collection
+    {
+        return $this->followed;
+    }
+
+    public function addFollowed(User $user): User
+    {
+        if ($user->getId() === $this->getId()) {
+            throw new \InvalidArgumentException('A user cannot follow it self');
+        }
+
+        if (false === $this->followed->contains($user)) {
+            $this->followed->add($user);
+            $user->addFollower($this);
+        }
+
         return $this;
     }
 
