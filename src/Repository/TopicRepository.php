@@ -47,4 +47,23 @@ class TopicRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function getFollowedInvolvedTopics(User $user): array
+    {
+        $followed = $user->getFollowed();
+
+        if (empty($followed)) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('t')
+            ->join('t.comments', 'c')
+            ->join('c.replies', 'r')
+            ->where('t.user IN (:followed)')
+            ->orWhere('c.author IN (:followed)')
+            ->orWhere('r.author IN (:followed)')
+            ->setParameter('followed', $followed)
+            ->getQuery()
+            ->getResult();
+    }
 }

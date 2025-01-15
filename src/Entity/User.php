@@ -57,13 +57,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'followed')]
     #[ORM\JoinTable(
         name: 'user_follower',
-        joinColumns: new ORM\JoinColumn(name: 'follower_id', referencedColumnName: 'id'),
-        inverseJoinColumns: new ORM\JoinColumn(name: 'followed_id', referencedColumnName: 'id')
+        joinColumns: new ORM\JoinColumn(name: 'followed_id', referencedColumnName: 'id'),
+        inverseJoinColumns: new ORM\JoinColumn(name: 'follower_id', referencedColumnName: 'id')
     )]
     #[Exclude]
     private Collection $followers;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'followers')]
+    #[Exclude]
     private Collection $followed;
 
     private ?string $plainPassword = null;
