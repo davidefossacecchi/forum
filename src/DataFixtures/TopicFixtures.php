@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Category;
 use App\Entity\Topic;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -13,7 +14,8 @@ class TopicFixtures extends Fixture implements DependentFixtureInterface
     public function getDependencies(): array
     {
         return [
-            UserFixtures::class
+            UserFixtures::class,
+            CategoryFixture::class
         ];
     }
 
@@ -23,11 +25,16 @@ class TopicFixtures extends Fixture implements DependentFixtureInterface
         $userRepository = $manager->getRepository(User::class);
         $users = $userRepository->findAll();
 
+        $categories = $manager->getRepository(Category::class)->findAll();
+
         foreach ($users as $user) {
+            $categoryIndex = array_rand($categories);
+            $category = $categories[$categoryIndex];
             $topic = new Topic();
             $topic->setTitle($faker->realText(100))
                 ->setText($faker->realText(500))
-                ->setUser($user);
+                ->setUser($user)
+                ->setCategory($category);
 
             $manager->persist($topic);
         }

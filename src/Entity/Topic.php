@@ -40,6 +40,10 @@ class Topic implements UserOwnedEntityInterface
     #[Exclude]
     private Collection $comments;
 
+    #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'topics')]
+    #[Assert\NotNull(message: 'La categoria deve essere specificata')]
+    private Category $category;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -92,6 +96,18 @@ class Topic implements UserOwnedEntityInterface
     public function getAuthor(): User
     {
         return $this->getUser();
+    }
+
+    public function getCategory(): Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(Category $category): Topic
+    {
+        $this->category = $category;
+        $category->addTopic($this);
+        return $this;
     }
 
     public function getCreatedAt(): \DateTimeImmutable

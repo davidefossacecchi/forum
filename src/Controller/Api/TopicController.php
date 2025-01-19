@@ -2,11 +2,13 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Category;
 use App\Entity\Topic;
 use App\Entity\User;
 use App\Pagination\Pagination;
 use App\Repository\TopicRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -26,6 +28,7 @@ class TopicController extends AbstractFOSRestController
         $form = $this->createFormBuilder(new Topic())
             ->add('title', TextType::class)
             ->add('text', TextType::class)
+            ->add('category', EntityType::class, ['class' => Category::class, 'choice_label' => 'name'])
             ->getForm();
 
         $form->submit($request->request->all());

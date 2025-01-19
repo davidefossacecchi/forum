@@ -18,6 +18,9 @@ fixtures:
 	env USER_ID=$(USER_ID) GROUP_ID=$(GROUP_ID) docker compose exec php bin/console doctrine:schema:update --force
 	env USER_ID=$(USER_ID) GROUP_ID=$(GROUP_ID) docker compose exec php bin/console doctrine:fixtures:load --no-interaction
 
+migrate:
+	env USER_ID=$(USER_ID) GROUP_ID=$(GROUP_ID) docker compose exec php bin/console doctrine:schema:update --force
+
 composer-install:
 	env USER_ID=$(USER_ID) GROUP_ID=$(GROUP_ID) docker compose exec php composer install
 
