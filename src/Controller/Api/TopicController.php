@@ -5,7 +5,6 @@ namespace App\Controller\Api;
 use App\Entity\Category;
 use App\Entity\Topic;
 use App\Entity\User;
-use App\Pagination\Pagination;
 use App\Repository\TopicRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;

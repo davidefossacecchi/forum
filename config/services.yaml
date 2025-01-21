@@ -29,4 +29,3 @@ services:
               direction: serialization
               format: json
               method: serialize
-
