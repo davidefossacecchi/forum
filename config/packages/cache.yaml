@@ -2,5 +2,5 @@ framework:
     cache:
         default_redis_provider: 'redis://redis'
         pools:
-            doctrine_cache:
+            data_cache:
                 adapter: cache.adapter.redis

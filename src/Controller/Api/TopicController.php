@@ -2,12 +2,16 @@
 
 namespace App\Controller\Api;
 
+use App\DTO\CategoryDto;
+use App\DTO\TopicDto;
 use App\Entity\Category;
 use App\Entity\Topic;
 use App\Entity\User;
+use App\Repository\CategoryRepository;
 use App\Repository\TopicRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -24,16 +28,30 @@ class TopicController extends AbstractFOSRestController
     #[Rest\Post("", name: "create_topic")]
     public function create(Request $request, EntityManagerInterface $entityManager, #[CurrentUser] User $user): View
     {
-        $form = $this->createFormBuilder(new Topic())
+        /** @var CategoryRepository $categoryRepository */
+        $categoryRepository = $entityManager->getRepository(Category::class);
+
+        $form = $this->createFormBuilder(new TopicDto())
             ->add('title', TextType::class)
             ->add('text', TextType::class)
-            ->add('category', EntityType::class, ['class' => Category::class, 'choice_label' => 'name'])
+            ->add('category',
+                ChoiceType::class,
+                [
+                    'choices' => $categoryRepository->getCategoryOptions(),
+                    'choice_label' => 'name',
+                    'choice_value' => 'id'
+                ])
             ->getForm();
 
         $form->submit($request->request->all());
         $this->throwExceptionIfInvalid($form);
-        $topic = $form->getData();
-        $topic->setUser($user);
+        /** @var TopicDto $topicDto */
+        $topicDto = $form->getData();
+        $topic = new Topic();
+        $topic->setTitle($topicDto->getTitle())
+            ->setText($topicDto->getText())
+            ->setCategory($categoryRepository->find($topicDto->getCategory()->id))
+            ->setUser($user);
         $entityManager->persist($topic);
         $entityManager->flush();
         $entityManager->refresh($topic);

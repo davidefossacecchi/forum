@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Entity\Category;
+use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -15,8 +16,9 @@ class CategoryController extends AbstractFOSRestController
     #[Rest\Get(path: '', name: 'categories_index')]
     public function index(EntityManagerInterface $entityManager): View
     {
+        /** @var CategoryRepository $repo */
         $repo = $entityManager->getRepository(Category::class);
-        $all = $repo->findAll();
+        $all = $repo->getCategoryOptions();
 
         return $this->view($all);
     }

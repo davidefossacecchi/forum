@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-interface CachingRepositoryInterface
+interface CachingServiceInterface
 {
     public function clearCache(): void;
 }
