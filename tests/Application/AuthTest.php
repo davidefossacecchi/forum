@@ -2,27 +2,16 @@
 
 namespace App\Tests\Application;
 
-use App\Entity\User;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\DataFixtures\UserFixtures;
 
-class AuthTest extends WebTestCase
+class AuthTest extends AbstractApplicationTest
 {
-    protected KernelBrowser $client;
-    protected Container $container;
-
-    protected function setUp(): void
-    {
-        $this->client = static::createClient();
-        $this->container = static::getContainer();
-    }
+    use LogsUserInTrait;
+    use UrlGeneratorTrait;
 
     public function testLogin(): void
     {
-        $this->runLoginTest('dphox@test.com', '12345678');
+        $this->runLoginTest(UserFixtures::KNOWN_EMAIL, UserFixtures::KNOWN_PASSWORD);
     }
 
     public function testSignup(): void
@@ -40,20 +29,12 @@ class AuthTest extends WebTestCase
 
     public function testMe(): void
     {
-        /** @var EntityManagerInterface $em */
-        $em = $this->container->get(EntityManagerInterface::class);
-        $userRepo = $em->getRepository(User::class);
-        /** @var User $user */
-        $user = $userRepo->findOneBy(['email' => 'dphox@test.com']);
-        $this->client->loginUser($user);
-
+        $this->logDefaultUserIn();
         $path = $this->generateUrl('me');
         $this->client->jsonRequest('GET', $path);
         $this->assertResponseIsSuccessful();
 
-        $responseContent = $this->client->getResponse()->getContent();
-        $response = json_decode($responseContent, true);
-        $this->assertTrue((bool) $response);
+        $response = $this->getDecodedResponse();
         $this->assertNotEmpty($response['email']);
         $this->assertNotEmpty($response['name']);
     }
@@ -69,12 +50,5 @@ class AuthTest extends WebTestCase
         $this->assertTrue((bool) $response);
         $this->assertNotEmpty($response['token']);
         $this->assertNotEmpty($response['refresh_token']);
-    }
-
-    private function generateUrl(string $name, array $parameters = [], int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH): string
-    {
-        /** @var UrlGeneratorInterface $router */
-        $router = $this->container->get(UrlGeneratorInterface::class);
-        return $router->generate($name, $parameters, $referenceType);
     }
 }

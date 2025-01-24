@@ -11,21 +11,22 @@ use Faker\Factory;
 class UserFixtures extends Fixture
 {
 
+    public const KNOWN_EMAIL = 'dphox@test.com';
+    public const KNOWN_PASSWORD = '12345678';
+
     public function __construct(private readonly UserPasswordHasherInterface $hasher)
     {
 
     }
     public function load(ObjectManager $manager): void
     {
-        $knownEmail = 'dphox@test.com';
-        $knownPassword = '12345678';
         $faker = Factory::create('it_IT');
         /** @var User[] $users */
         $users = [];
         for ($i = 0; $i < 20; $i++) {
             if ($i === 0) {
-                $email = $knownEmail;
-                $password = $knownPassword;
+                $email = self::KNOWN_EMAIL;
+                $password = self::KNOWN_PASSWORD;
             } else {
                 $email = $faker->email;
                 $password = $faker->password;
