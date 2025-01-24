@@ -25,6 +25,6 @@ composer-install:
 	env USER_ID=$(USER_ID) GROUP_ID=$(GROUP_ID) docker compose exec php composer install
 
 generate-keypair:
-	env USER_ID=$(USER_ID) GROUP_ID=$(GROUP_ID) docker compose exec php bin/console lexik:jwt:generate-keypair
+	env USER_ID=$(USER_ID) GROUP_ID=$(GROUP_ID) docker compose exec php bin/console lexik:jwt:generate-keypair --skip-if-exists
 
 init: up composer-install fixtures generate-keypair
