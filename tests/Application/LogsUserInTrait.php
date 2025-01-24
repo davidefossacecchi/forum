@@ -15,11 +15,16 @@ trait LogsUserInTrait
 
     protected function logDefaultUserIn(): void
     {
+        $user = $this->getDefaultUser();
+        $this->client->loginUser($user);
+    }
+
+    protected function getDefaultUser(): User
+    {
         /** @var EntityManagerInterface $em */
         $em = $this->container->get(EntityManagerInterface::class);
         $userRepo = $em->getRepository(User::class);
         /** @var User $user */
-        $user = $userRepo->findOneBy(['email' => UserFixtures::KNOWN_EMAIL]);
-        $this->client->loginUser($user);
+        return $userRepo->findOneBy(['email' => UserFixtures::KNOWN_EMAIL]);
     }
 }
