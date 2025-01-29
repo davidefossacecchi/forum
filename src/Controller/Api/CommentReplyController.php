@@ -49,7 +49,7 @@ class CommentReplyController extends AbstractFOSRestController
 
     }
 
-    #[Rest\Delete('/{reply}', 'delete_reply')]
+    #[Rest\Delete('/{reply}', name: 'delete_reply')]
     #[IsGranted('delete', 'reply')]
     public function delete(CommentReply $reply): void
     {

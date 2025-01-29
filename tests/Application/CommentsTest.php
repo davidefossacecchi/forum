@@ -2,7 +2,6 @@
 
 namespace App\Tests\Application;
 
-use App\Entity\Comment;
 use App\Entity\Topic;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -12,6 +11,7 @@ class CommentsTest extends AbstractApplicationTest
 {
     use LogsUserInTrait;
     use UrlGeneratorTrait;
+    use UseCommentsRepo;
 
     public function testList(): void
     {
@@ -98,23 +98,8 @@ class CommentsTest extends AbstractApplicationTest
         $this->assertResponseStatusCodeSame(403);
     }
 
-    private function getTestComment(): Comment
-    {
-
-        $all = $this->getCommentsRepository()->findAll();
-        /** @var Comment $commentRef */
-        return $all[0];
-    }
-
     private function getTestTopic(): Topic
     {
         return $this->getTestComment()->getTopic();
-    }
-
-    private function getCommentsRepository(): ServiceEntityRepository
-    {
-        /** @var EntityManagerInterface $em */
-        $em = $this->container->get(EntityManagerInterface::class);
-        return $em->getRepository(Comment::class);
     }
 }
