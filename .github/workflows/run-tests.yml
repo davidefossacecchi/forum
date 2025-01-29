@@ -13,9 +13,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Setup .env
-        run: cp .env.test .env
-
       - name: Retrieve composer cache
         id: cache-primes-restore
         uses: actions/cache/restore@v4
