@@ -4,3 +4,10 @@ framework:
         pools:
             data_cache:
                 adapter: cache.adapter.redis
+
+when@test:
+    framework:
+        cache:
+            pools:
+                data_cache:
+                    adapter: cache.adapter.array

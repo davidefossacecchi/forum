@@ -2,7 +2,6 @@
 
 namespace App\Controller\Api;
 
-use App\DTO\CategoryDto;
 use App\DTO\TopicDto;
 use App\Entity\Category;
 use App\Entity\Topic;
@@ -10,7 +9,6 @@ use App\Entity\User;
 use App\Repository\CategoryRepository;
 use App\Repository\TopicRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
