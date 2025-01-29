@@ -1,0 +1,35 @@
+name: Run Tests
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Retrieve composer cache
+        id: cache-primes-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: ./vendor
+          key: composer-${{ hashFiles('./composer.lock') }}
+
+      - name: Install dependencies and ups the environment
+        run: make init
+
+      - name: Save composer cache
+        uses: actions/cache/save@v4
+        with:
+          path: ./vendor
+          key: ${{ steps.cache-primes-restore.outputs.cache-primary-key }}
+
+      - name: Run tests
+        run: make test
+
+
