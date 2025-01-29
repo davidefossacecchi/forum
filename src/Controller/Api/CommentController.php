@@ -56,7 +56,7 @@ class CommentController extends AbstractFOSRestController
         return $this->view($comment);
     }
 
-    #[Rest\Delete('/{comment}', 'delete_comment')]
+    #[Rest\Delete('/{comment}', name: 'delete_comment')]
     #[IsGranted('delete', 'comment')]
     public function delete(Comment $comment): void
     {

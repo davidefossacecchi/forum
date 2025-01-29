@@ -4,6 +4,7 @@ namespace App\Tests\Application;
 
 use App\Entity\Comment;
 use App\Entity\Topic;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -54,6 +55,47 @@ class CommentsTest extends AbstractApplicationTest
         $commentEntity = $commentRepository->find($response['id']);
 
         $this->assertNotEmpty($commentEntity);
+    }
+
+    public function testCommentDelete(): void
+    {
+        $comment = $this->getTestComment();
+        $commentId = $comment->getId();
+        $user = $comment->getAuthor();
+        $this->client->loginUser($user);
+        $url = $this->generateUrl('delete_comment', ['topic' => $comment->getTopic()->getId(), 'comment' => $comment->getId()]);
+        $this->client->jsonRequest('DELETE', $url);
+        $this->assertResponseIsSuccessful();
+
+        $storedComment = $this->getCommentsRepository()->find($commentId);
+        $this->assertNull($storedComment);
+    }
+
+    public function testCommentDeletableOnlyByOwner(): void
+    {
+        $comment = $this->getTestComment();
+
+        /** @var EntityManagerInterface $em */
+        $em = $this->container->get(EntityManagerInterface::class);
+
+        /** @var ServiceEntityRepository $userRepo */
+        $userRepo = $em->getRepository(User::class);
+
+        $user = $userRepo->createQueryBuilder('u')
+            ->where('u.id != :userId')
+            ->setMaxResults(1)
+            ->setParameter('userId', $comment->getAuthor()->getId())
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        if (empty($user)) {
+            $this->markTestSkipped('No different user found');
+        }
+
+        $this->client->loginUser($user);
+        $url = $this->generateUrl('delete_comment', ['topic' => $comment->getTopic()->getId(), 'comment' => $comment->getId()]);
+        $this->client->jsonRequest('DELETE', $url);
+        $this->assertResponseStatusCodeSame(403);
     }
 
     private function getTestComment(): Comment
