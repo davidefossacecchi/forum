@@ -2,11 +2,11 @@
 
 namespace App\DTO;
 
-class CategoryDto
+readonly class CategoryDto
 {
     public function __construct(
-        public readonly int $id,
-        public readonly string $name
+        public int    $id,
+        public string $name
     )
     {
 

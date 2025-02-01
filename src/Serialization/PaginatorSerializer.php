@@ -6,9 +6,9 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use JMS\Serializer\JsonSerializationVisitor;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class PaginatorSerializer
+readonly class PaginatorSerializer
 {
-    private readonly int $page;
+    private int $page;
     public function __construct(RequestStack $stack)
     {
         $this->page = $stack->getMainRequest()->query->get('page', 1);

@@ -20,7 +20,7 @@ class FollowerTest extends AbstractApplicationTest
         /** @var User|null $followingUser */
         $followingUser = $userRepo->createQueryBuilder('u')
             ->where('u.id != :userId')
-            ->setParameter('userId', $defaultUser)
+            ->setParameter('userId', $defaultUser->getId())
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
@@ -35,7 +35,7 @@ class FollowerTest extends AbstractApplicationTest
         $this->assertResponseIsSuccessful();
         $decodedResponse = $this->getDecodedResponse();
 
-        $this->assertNotEmpty($decodedResponse['user']);
+        $this->assertEquals($defaultUser->getId(), $decodedResponse['id']);
     }
 
     public function testUserCannotFollowHimSelf(): void
