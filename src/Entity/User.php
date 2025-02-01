@@ -67,6 +67,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Exclude]
     private Collection $followed;
 
+    #[Exclude]
     private ?string $plainPassword = null;
 
     public function __construct()
