@@ -21,7 +21,7 @@ jobs:
           key: composer-${{ hashFiles('./composer.lock') }}
 
       - name: Install dependencies and ups the environment
-        run: make init
+        run: make prepare-env
 
       - name: Save composer cache
         uses: actions/cache/save@v4
