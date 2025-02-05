@@ -13,6 +13,7 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Attribute\Model;
+use Nelmio\ApiDocBundle\Attribute\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
@@ -27,6 +28,7 @@ class AuthController extends AbstractFOSRestController
         description: "User correctly created"
     )]
     #[OA\RequestBody(content: new Model(type: SignupType::class))]
+    #[Security(name: null)]
     public function signup(Request $request, UserPasswordHasherInterface $hasher, EntityManagerInterface $em): ?View
     {
         $form = $this->createForm(SignupType::class, new User());
