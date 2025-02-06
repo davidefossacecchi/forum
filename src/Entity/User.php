@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\UserRole;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -70,6 +71,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Exclude]
     private ?string $plainPassword = null;
 
+    #[ORM\Column(type: Types::SIMPLE_ARRAY)]
+    private array $roles = [UserRole::USER->value, UserRole::API->value];
+
     public function __construct()
     {
         $this->topics = new ArrayCollection();
@@ -80,7 +84,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        return ['ROLE_USER', 'ROLE_API'];
+        return $this->roles;
+    }
+
+    public function setRoles(array $roles): void
+    {
+        $this->roles = $roles;
+    }
+
+    public function addRole(string $role): static
+    {
+        if (UserRole::isValidRole($role)) {
+            $this->roles[] = $role;
+            $this->roles = array_unique($this->roles);
+            return $this;
+        }
+        throw new \InvalidArgumentException(sprintf('Role "%s" is not valid', $role));
+    }
+
+    public function removeRole(string $role): static
+    {
+        if (UserRole::isValidRole($role)) {
+            $this->roles = array_diff($this->roles, [$role]);
+            return $this;
+        }
+        throw new \InvalidArgumentException(sprintf('Role "%s" is not valid', $role));
     }
 
     public function eraseCredentials(): void
