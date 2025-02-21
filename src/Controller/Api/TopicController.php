@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\DTO\FileUploadDTO;
 use App\DTO\TopicDto;
 use App\Entity\Category;
 use App\Entity\Topic;
@@ -15,13 +16,17 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes\Property;
-use phpDocumentor\Reflection\Fqsen;
-use phpDocumentor\Reflection\Types\Collection;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use OpenApi\Attributes as OA;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 #[Rest\Route('/topics')]
 class TopicController extends AbstractFOSRestController
